@@ -9,6 +9,8 @@
  * GitHub history for details.
  */
 
+/* eslint-disable no-console */
+
 /*
  * Licensed to Elasticsearch B.V. under one or more contributor
  * license agreements. See the NOTICE file distributed with
@@ -109,6 +111,21 @@ class ScopedCookieSessionStorage<T extends Record<string, any>> implements Sessi
     }
   }
   public set(sessionValue: T) {
+    try {
+      const url = this.request.url;
+      if (url && url.search) {
+        console.log(url, 'url=====================================');
+        // const myURL = new URL(url.href);
+        const redirectUrl = url.searchParams.get('redirectUrl');
+        console.log(redirectUrl, 'redirectUrl======================');
+        if (redirectUrl) {
+          sessionValue.oidc.nextUrl = redirectUrl;
+          return this.request.cookieAuth.set(sessionValue);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
     return this.request.cookieAuth.set(sessionValue);
   }
   public clear() {
