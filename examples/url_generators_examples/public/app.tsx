@@ -79,12 +79,14 @@ export const Routes: React.FC<{}> = () => {
 export const LinksExample: React.FC<{
   appBasePath: string;
 }> = (props) => {
+  const ele = document.getElementById('portlet-opensearch');
+  const customBasename = ele?.getAttribute('basename');
   const history = React.useMemo(
     () =>
       createBrowserHistory({
-        basename: props.appBasePath,
+        basename: customBasename || props.appBasePath,
       }),
-    [props.appBasePath]
+    [props.appBasePath, customBasename]
   );
   return (
     <Router history={history}>

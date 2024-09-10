@@ -58,6 +58,24 @@ export async function buildDistributables(log: ToolingLog, options: BuildOptions
     log,
   });
 
+  const onlyRunDockerBuild = false;
+
+  if (onlyRunDockerBuild) {
+    if (options.createDockerPackage) {
+      // control w/ --docker or --skip-docker-ubi or --skip-os-packages
+      await run(Tasks.CreateDockerPackage);
+      if (options.createDockerUbiPackage) {
+        await run(Tasks.CreateDockerUbiPackage);
+      }
+    }
+
+    /**
+     * finalize artifacts by writing sha1sums of each into the target directory
+     */
+    await run(Tasks.WriteShaSums);
+
+    return;
+  }
   /**
    * verify, reset, and initialize the build environment
    */

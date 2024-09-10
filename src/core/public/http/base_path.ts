@@ -48,7 +48,39 @@ export class BasePath {
 
   public prepend = (path: string, prependOptions?: PrependOptions): string => {
     const { withoutClientBasePath } = prependOptions || {};
-    const basePath = withoutClientBasePath ? this.basePath : this.get();
+    let basePath = withoutClientBasePath ? this.basePath : this.get();
+    try {
+      const ele = document.getElementById('portlet-opensearch');
+
+      if (ele) {
+        const apiPathFlagStr = ele.getAttribute('api-prefix') || '';
+        const apiPathFlags = apiPathFlagStr.split(',');
+        const isPrefixOfAny = (str: string, arr: string[]) => {
+          for (const prefix of arr) {
+            if (str.startsWith(prefix)) {
+              return true;
+            }
+          }
+
+          return false;
+        };
+
+        if (
+          apiPathFlags.length &&
+          !isPrefixOfAny(path, apiPathFlags) &&
+          ele.getAttribute('basename')
+        ) {
+          basePath = ele.getAttribute('basename') || basePath;
+        }
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('portlet-opensearch not found');
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+
     if (!basePath) return path;
     return modifyUrl(path, (parts) => {
       if (!parts.hostname && parts.pathname && parts.pathname.startsWith('/')) {

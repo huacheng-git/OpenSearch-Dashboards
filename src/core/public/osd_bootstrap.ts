@@ -51,7 +51,7 @@ export async function __osdBootstrap__() {
 
   const coreSystem = new CoreSystem({
     injectedMetadata,
-    rootDomElement: document.body,
+    rootDomElement: document.querySelector('#portlet-opensearch') || document.body,
     browserSupportsCsp: !(window as any).__osdCspNotEnforced__,
   });
 

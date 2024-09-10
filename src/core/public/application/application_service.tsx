@@ -135,7 +135,10 @@ export class ApplicationService {
     history,
   }: SetupDeps): InternalApplicationSetup {
     const basename = basePath.get();
-    this.history = history || createBrowserHistory({ basename });
+    const ele = document.getElementById('portlet-opensearch');
+    const customBasename = ele?.getAttribute('basename');
+
+    this.history = history || createBrowserHistory({ basename: customBasename || basename });
 
     this.navigate = (url, state, replace) => {
       // basePath not needed here because `history` is configured with basename

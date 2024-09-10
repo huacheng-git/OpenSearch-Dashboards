@@ -11,6 +11,8 @@
 ################################################################################
 FROM {{{baseOSImage}}} AS builder
 
+RUN sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/*.repo
+RUN sed -i 's|^#baseurl=http://mirror.centos.org|baseurl=https://mirrors.aliyun.com|g' /etc/yum.repos.d/*.repo
 {{#ubi}}
 RUN {{packageManager}} install -y findutils tar gzip
 {{/ubi}}
@@ -44,7 +46,8 @@ RUN find /usr/share/opensearch-dashboards -type d -exec chmod g+s {} \;
 ################################################################################
 FROM {{{baseOSImage}}}
 EXPOSE 5601
-
+RUN sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/*.repo
+RUN sed -i 's|^#baseurl=http://mirror.centos.org|baseurl=https://mirrors.aliyun.com|g' /etc/yum.repos.d/*.repo
 {{#ubi}}
   # https://github.com/rpm-software-management/microdnf/issues/50
   RUN mkdir -p /run/user/$(id -u)
@@ -130,6 +133,8 @@ RUN mkdir /licenses && \
 {{/ubi}}
 
 USER opensearch-dashboards
+
+RUN bin/opensearch-dashboards-plugin install https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/2.15.0/7749/linux/x64/tar/builds/opensearch-dashboards/plugins/securityDashboards-2.15.0.zip
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
